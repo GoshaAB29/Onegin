@@ -1,14 +1,13 @@
 #pragma once
 
-#include <iostream>
 #include <stdio.h>
 #include <assert.h>
-#include <string.h>
 #include <stdlib.h>
+#include <math.h>
+#include <sys\stat.h>
+#include <string.h>
+#include <ctype.h>
 #include "TxLib.h"
-
-static const int MAX_STR = 25000;
-static const int BUFF_LENGTH = 1000;
 
 struct String {
     int length = 0;
@@ -16,13 +15,24 @@ struct String {
 };
 
 struct Text {
-    int num_line = 0;
-    char buffer[BUFF_LENGTH] = "";
+    size_t file_size = 0;
+    int num_strings = 0;
+    char *buffer = nullptr;
+    String *str = nullptr;
 };
 
-int read_from_file (char *index[], const char* name);
+int compare (const void *first_str, const void *second_str);
 
-void do_sorting (char *index[], const int num_line);
+int compare_reverse (const void *first_str, const void *second_str);
 
-void write_to_file (char *index[], const int num_line);
+void read_from_file (Text *text, const char *name);
 
+void do_sorting (Text *text);
+
+void write_to_file (Text *text);
+
+void free_text (Text *text);
+
+void read_buffer (Text *text, FILE *file);
+
+void number_of_lines (Text *text);
