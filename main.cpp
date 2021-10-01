@@ -1,18 +1,19 @@
 #include "header/onegin.h"
+#include <iostream>
 
-int main()
+int main(int argc, char *argv[])
 {
     setlocale (LC_ALL, "ru_Ru.cp1251");
-    char *index[MAX_STR] = {0};
 
-    //*index = (char *) realloc (*index, sizeof(char)*10);
+    Text text = {};
 
-    int num_str = read_from_file (index, "test1.txt");
+    read_from_file (&text, "test1.txt"); //...argv[1]);
+    do_sorting (&text);
+    write_to_file (&text);
 
-    do_sorting (index, num_str);
+    free_text (&text);
 
-    write_to_file (index, num_str);
+    printf ("Sorting is done");
 
-    printf ("program completed");
     return 0;
 }
