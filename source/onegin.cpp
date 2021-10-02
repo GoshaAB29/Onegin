@@ -1,18 +1,8 @@
-#include "../header/onegin.h"
+#include "../include/onegin.h"
 
-void number_of_lines (Text *text)
-{
-    assert (text->buffer);
-
-    for (int num_smb_for_new_str = 0; num_smb_for_new_str < text->file_size;
-        ++num_smb_for_new_str) {
-
-        if (text->buffer[num_smb_for_new_str] == '\n')
-            text->num_strings++;
-    }
-
-    text->str = (String*)calloc(text->num_strings, sizeof (String));
-}
+//#define DEBUG_BUFFER
+//#define DEBUG_INIT
+//#define DEBUG_SORT
 
 void read_buffer (Text *text, FILE *file)
 {
@@ -24,140 +14,191 @@ void read_buffer (Text *text, FILE *file)
     fread (text->buffer, sizeof (char), text->file_size, file);
 
     text->buffer[text->file_size] = '\0';
+
+    #ifdef DEBUG_BUFFER
+        printf ("buffer contains: \"%d\"", text->file_size);
+    #endif
 }
 
-int compare (const void *first_str, const void *second_str)
+void count_number_of_lines (Text *text)
 {
-    assert (first_str != nullptr);
-    assert (second_str != nullptr);
+    assert (text->buffer);
 
-    const String first  = *(String*)first_str;
-    const String second = *(String*)second_str;
+    for (unsigned int num_smb_for_new_str = 0; num_smb_for_new_str < text->file_size;
+        ++num_smb_for_new_str) {
 
-    int current_first = 0;
-    int current_second = 0;
-
-    if ((first.length == 0) && (second.length == 0))
-        return 0;
-    else {
-        if (first.length == 0)
-            return -1;
-        if (second.length == 0)
-            return 1;
+        if (text->buffer[num_smb_for_new_str] == '\n')
+            text->num_strings++;
     }
 
-    while ((first.data[current_first] != '\0') &&
-           (second.data[current_second] != '\0')) {
+    text->str = (String*)calloc(text->num_strings, sizeof (String));
 
-        if ((isalnum (first.data[current_first])) == 0)
-            current_first++;
-        if ((isalnum (second.data[current_second])) == 0)
-            current_second++;
+    #ifdef DEBUG_BUFFER
+        printf ("the number of strings in buffer is %d\n", text->num_strings);
+    #endif
+}
 
-            if ((first.data[current_first] == second.data[current_second]) &&
-                (isalnum (second.data[current_first]) != 0) &&
-                (isalnum (second.data[current_first]) != 0)) {
+int compare (const void *lh_str, const void *rh_str)
+{
+    assert (lh_str != nullptr);
+    assert (rh_str != nullptr);
 
-                current_first++;
-                current_second++;
+    const String lhs  = *(String*)lh_str;
+    const String rhs = *(String*)rh_str;
+
+    int current_lhs = 0;
+    int current_rhs = 0;
+
+    if ((lhs.data == NULL) && (rhs.data == 0))
+        return 0;
+    if (lhs.data == 0)
+            return -1;
+    if (rhs.data == 0)
+            return 1;
+
+    while ((lhs.data[current_lhs] != '\0') &&
+           (rhs.data[current_rhs] != '\0')) {
+
+            if (lhs.data[current_lhs] == rhs.data[current_rhs]) {
+                current_lhs++;
+                current_rhs++;
 
             } else {
 
-            //printf("%d : %d\n", first.data[current_first], second.data[current_second]);
-                return first.data[current_first] -
-                    second.data[current_second];
+                if ((isalnum (lhs.data[current_lhs]) != 0) &&
+                (isalnum (rhs.data[current_rhs]) != 0)) {
+                    return lhs.data[current_lhs] -
+                        rhs.data[current_rhs];
+
+                } else {
+
+                    if (isalnum (lhs.data[current_lhs]) == 0)
+                        current_lhs++;
+                    if (isalnum (rhs.data[current_rhs]) == 0)
+                        current_rhs++;
+                }
             }
     }
- //   printf (strtok(
-    return first.length - second.length;
+    return lhs.length - rhs.length;
 }
 
-int compare_reverse (const void *first_str, const void *second_str)
+int compare_reverse (const void *lh_str, const void *rh_str)
 {
-    assert (first_str != nullptr);
-    assert (second_str != nullptr);
+    assert (lh_str != nullptr);
+    assert (rh_str != nullptr);
 
-    const String first  = *(String*)first_str;
-    const String second = *(String*)second_str;
+    const String lhs  = *(String*)lh_str;
+    const String rhs = *(String*)rh_str;
 
-    int current_first = first.length - 1;
-    int current_second = second.length - 1;
+    int current_lhs = lhs.length - 1;
+    int current_rhs = rhs.length - 1;
 
-    //printf ("%d ", current_first);
-    //printf ("%d\n", current_second);
-    //printf ("%c\n", first.data[first.length - 2]);
+    #ifdef DEBUG_SORT
+        printf ("%d ", current_first);
+        printf ("%d\n", current_second);
+    #endif
 
-    while ((current_first >= 0) &&
-           (current_second >= 0)) {
+    while ((current_lhs >= 0) &&
+           (current_rhs >= 0)) {
 
-        if ((isalnum (first.data[current_first])) == 0)
-            current_first--;
-        if ((isalnum (second.data[current_second])) == 0)
-            current_second--;
+        if (lhs.data[current_lhs] == rhs.data[current_rhs]) {
+            current_lhs--;
+            current_rhs--;
 
-        if (first.data[current_first] == second.data[current_second]) {
-            current_first--;
-            current_second--;
+        } else {
+            if ((isalnum (lhs.data[current_lhs]) != 0) &&
+                (isalnum (rhs.data[current_rhs]) != 0)) {
 
-        } else
-                return (first.data[current_first] -
-                        second.data[current_second]);
+                return (lhs.data[current_lhs] - rhs.data[current_rhs]);
+            }  else {
+
+                    if (isalnum (lhs.data[current_lhs]) == 0)
+                        current_lhs--;
+                    if (isalnum (rhs.data[current_rhs]) == 0)
+                        current_rhs--;
+            }
+        }
     }
-
-    return current_first - current_second;
+    return current_lhs - current_rhs;
 }
 
 
-void read_from_file (Text *text, const char *name)
+void text_init (Text *text, const char *name)
 {
     assert (text);
+
+    FILE *for_sorting = fopen (name, "r");
+
+    assert (for_sorting);
+
     struct stat buff;
 
-    stat ("test1.txt", &buff);
+    fstat (fileno(for_sorting), &buff);
     text->file_size = buff.st_size;
 
-    FILE *for_sorting = fopen (name,"r");
+    #ifdef DEBUG_BUFFER
+            printf ("the file size is %d\n", buff.st_size);
+    #endif
 
-    assert (for_sorting); // strtok
     read_buffer (text, for_sorting);
-    number_of_lines (text);
+    count_number_of_lines (text);
 
     fclose (for_sorting);
 
-    //printf ("%s", text->str[index + 1].data);
-    //bool new_str = false;
-    char *current = strtok (text->buffer, "\n");
+    int index_str = 0;
+    int current_symb = 0;
+    int current_length = 0;
 
-    int index = 0;
+    text->str[index_str].data = text->buffer;
 
-    text->str[index].data = current;
+    #ifdef DEBUG_INIT
+    printf ("text->str[index_str] address is %d\n", text->str[index_str].data);
+    #endif
 
-    //text->str[index].length = current - text->buffer;
-    index++;
+    while (index_str < text->num_strings) {    //    gdb  (code blocks debugger)
 
-    while (text->num_strings - index > 0) {
+        if (text->buffer[current_symb] == '\n') {
 
-        current = strtok (NULL, "\n");
-        text->str[index].data = current;
-        text->str[index - 1].length = current - text->str[index - 1].data;
+            text->buffer[current_symb] = '\0';
+            text->str[index_str].length = current_length;
+            current_length = 0;
+            if (index_str + 1 < text->num_strings)
+                text->str[index_str + 1].data = text->buffer + current_symb + 1;
 
-       // printf ("%d\n", current - text-> buffer);
-//        printf ("index = %d, current = %d, length[i-1] = %d, data[i-1]= %d, len[i] = %d\n", index,
-  //              current, text->str[index -1].length, text->str[index-1].data, text->str[index].length);
+            index_str++;
 
-        //text->str[index].data[text->str[index].length - 1] = '\0';
-        index++;
+        } else
+            current_length++;
+
+        current_symb++;
+        if (text->buffer[current_symb] == '\r')
+            text->buffer[current_symb] = ' ';
+
+        #ifdef DEBUG_INIT
+            printf ("current (%d) address is %p\n", index_str, text->str[index_str]);
+            printf ("%d is length of [%d]\n", text->str[index_str].length, index_str);
+        #endif
     }
 
-    //text->str[index].data[text->str[index].length - 1] = '\0';
+    #ifdef DEBUG_INIT
+    printf ("str[%d].data is %d\n", index_str, current_symb);
+    for (int k = 0; k < 5; k ++)
+    printf ("length [%d] is %d\n", k, text->str[k].length);
 
-    //printf ("%s\n", text->str[0].data);
+    int num_output_strings = 0;
+
+    for (num_output_strings = 0; num_output_strings < text->num_strings;
+         num_output_strings++) {
+    printf ("%p\n", text->str[num_output_strings].data);
+    printf ("%s:::\n", text->str[num_output_strings].data);
+    }
+    #endif DEBUG
 }
 
 void do_sorting (Text *text)
 {
     assert (text);
-    qsort (text->str, text->num_strings, sizeof (String), compare);
+    qsort (text->str, text->num_strings, sizeof (String), compare_reverse);
 }
 
 void write_to_file (Text *text)
@@ -168,10 +209,9 @@ void write_to_file (Text *text)
     assert (isfinite (text->file_size));
     assert (sorted);
 
-    int num_str = 0;
-
     for (int current_line = 0; current_line < text->num_strings; ++current_line) {
-        fputs (text->str[num_str++].data, sorted);
+        fputs (text->str[current_line].data, sorted);
+        fputc ('\%', sorted);
         fputc ('\n', sorted);
     }
 
@@ -183,8 +223,8 @@ void free_text (Text *text)
      text->file_size = -1;
      text->num_strings = -1;
 
-     free(text->buffer);
-     free(text->str);
+     free (text->buffer);
+     free (text->str);
 
      text->buffer = nullptr;
      text->str = nullptr;
