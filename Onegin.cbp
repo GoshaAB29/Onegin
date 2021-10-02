@@ -33,7 +33,7 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 		</Compiler>
-		<Unit filename="header/onegin.h" />
+		<Unit filename="include/onegin.h" />
 		<Unit filename="main.cpp" />
 		<Unit filename="source/onegin.cpp" />
 		<Extensions>
