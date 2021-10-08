@@ -3,7 +3,6 @@
 #include <stdio.h>
 #include <assert.h>
 #include <stdlib.h>
-#include <math.h>
 #include <sys\stat.h>
 #include <string.h>
 #include <ctype.h>
@@ -21,17 +20,30 @@ struct Text {
     char *buffer = nullptr;
 };
 
+enum types_of_sort {
+    BASE_SORT = 0,
+    REVERSE_SORT = 1,
+};
+
+
 int compare (const void *lhs, const void *rhs);
 
 int compare_reverse (const void *lhs, const void *rhs);
 
+void str_swap (String *str1, String *str2);
+
+
+void my_sorting (Text *text, const int type_sort);
+
+void do_sorting (Text *text, const int type_sort);
+
+
 void text_init (Text *text, const char *name);
 
-void do_sorting (Text *text);
-
-void write_to_file (Text *text);
+void write_to_file (Text *text, const char *name);
 
 void free_text (Text *text);
+
 
 void read_buffer (Text *text, FILE *file);
 
