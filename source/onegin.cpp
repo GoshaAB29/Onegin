@@ -3,6 +3,7 @@
 //#define DEBUG_BUFFER
 //#define DEBUG_INIT
 //#define DEBUG_SORT
+//#define DEBUG_MYSORT
 
 void read_buffer (Text *text, FILE *file)
 {
@@ -122,6 +123,38 @@ int compare_reverse (const void *lh_str, const void *rh_str)
     return current_lhs - current_rhs;
 }
 
+void my_sorting (Text *text,  int type_sort)
+{
+
+    for (int x = 0; x + 1 < text->num_strings; x++) {
+        for (int y = x + 1; y < text->num_strings; y++)
+            if ((type_sort == BASE_SORT ? compare (&text->str[x], &text->str[y]):
+                 compare_reverse (&text->str[x], &text->str[y])) > 0) {
+
+                str_swap (&text->str[x], &text->str[y]);
+
+                 #ifdef DEBUG_MYSORT
+                    printf ("str[x], str[y] is %d, %d\n", &text->str[x], &text->str[y]);
+                 #endif
+            }
+    }
+
+}
+
+void str_swap (String *str1, String *str2)
+{
+    #ifdef DEBUG_MYSORT
+    printf ("str1, str2 before swap is %d, %d\n", str1, str2);
+    #endif
+
+    String tmp = *str1;
+    *str1 = *str2;
+    *str2 = tmp;
+
+    #ifdef DEBUG_MYSORT
+    printf ("str1, str2 after swap is %d, %d\n", str1, str2);
+    #endif
+}
 
 void text_init (Text *text, const char *name)
 {
@@ -195,15 +228,17 @@ void text_init (Text *text, const char *name)
     #endif DEBUG
 }
 
-void do_sorting (Text *text)
+void do_sorting (Text *text, int type_sort)
 {
     assert (text);
-    qsort (text->str, text->num_strings, sizeof (String), compare_reverse);
+    qsort (text->str, text->num_strings, sizeof (String),
+           type_sort == BASE_SORT ? compare : compare_reverse);
 }
 
-void write_to_file (Text *text)
+void write_to_file (Text *text, const char *name)
 {
-    FILE *sorted = fopen ("sorted.txt", "w");
+    assert (*name);
+    FILE *sorted = fopen (name, "w");
 
     assert (text);
     assert (isfinite (text->file_size));
@@ -211,7 +246,6 @@ void write_to_file (Text *text)
 
     for (int current_line = 0; current_line < text->num_strings; ++current_line) {
         fputs (text->str[current_line].data, sorted);
-        fputc ('\%', sorted);
         fputc ('\n', sorted);
     }
 
