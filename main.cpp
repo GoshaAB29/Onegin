@@ -1,13 +1,13 @@
 #include "include/onegin.h"
 #include <iostream>
 
-#define DEBUG
+//#define DEBUG
 
 /* TODO:
 1) Correct some issues mention in comments (ok)
 2) Docs
 3) Debug program (ok)
-4) Write your own sort
+4) Write your own sort (ok)
 */
 int main(int argc, char *argv[])
 {
@@ -20,8 +20,12 @@ int main(int argc, char *argv[])
     #endif
 
     text_init (&text, argv[1]);
-    do_sorting (&text);
-    write_to_file (&text);
+
+    my_sorting (&text, BASE_SORT);
+    write_to_file (&text, "sorted.txt");
+
+    my_sorting (&text, REVERSE_SORT);
+    write_to_file (&text, "sorted_reverse.txt");
 
     free_text (&text);
 
