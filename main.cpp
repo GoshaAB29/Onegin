@@ -1,30 +1,31 @@
 #include "include/onegin.h"
 #include <iostream>
 
-//#define DEBUG
+#define NOT_FROM_CMD
 
 /* TODO:
-1) Correct some issues mention in comments (ok)
+1) Correct some issues mention in comments
 2) Docs
-3) Debug program (ok)
-4) Write your own sort (ok)
 */
+
+//! main function (for sorting text)
+
 int main(int argc, char *argv[])
 {
     setlocale (LC_ALL, "ru_Ru.cp1251");
 
     Text text = {};
 
-    #ifdef DEBUG
+    #ifdef NOT_FROM_CMD
         argv[1] = "test1.txt";
     #endif
 
     text_init (&text, argv[1]);
 
-    my_sorting (&text, BASE_SORT);
+    do_sorting (&text, BASE_SORT);
     write_to_file (&text, "sorted.txt");
 
-    my_sorting (&text, REVERSE_SORT);
+    do_sorting (&text, REVERSE_SORT);
     write_to_file (&text, "sorted_reverse.txt");
 
     free_text (&text);
