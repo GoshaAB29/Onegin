@@ -50,11 +50,11 @@ int compare (const void *lh_str, const void *rh_str)
     int current_lhs = 0;
     int current_rhs = 0;
 
-    if ((lhs.data == NULL) && (rhs.data == 0))
+    if ((lhs.data == NULL) && (rhs.data == NULL))
         return 0;
-    if (lhs.data == 0)
+    if (lhs.data == NULL)
             return -1;
-    if (rhs.data == 0)
+    if (rhs.data == NULL)
             return 1;
 
     while ((lhs.data[current_lhs] != '\0') &&
